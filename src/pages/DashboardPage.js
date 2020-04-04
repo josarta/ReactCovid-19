@@ -1,7 +1,3 @@
-import MapWithBubbles from 'components/MapWithBubbles';
-import Page from 'components/Page';
-import CountryProgressTable from 'components/CountryProgressTable';
-import { IconWidget, NumberWidget } from 'components/Widget';
 import React from 'react';
 import {
   MdSentimentSatisfied,
@@ -9,7 +5,8 @@ import {
   MdEnhancedEncryption,
   MdWhatshot,
 } from 'react-icons/md';
-
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
 import {
   Card,
   CardBody,
@@ -17,8 +14,21 @@ import {
   Col,
   Row,
 } from 'reactstrap';
-import { countryProgressTableData } from 'demos/dashboardCountry';
+import { countryProgressTableData } from '../demos/dashboardCountry';
 
+
+import MapWithBubbles from '../components/MapWithBubbles';
+import Page from '../components/Page';
+import CountryProgressTable from '../components/CountryProgressTable';
+import { IconWidget, NumberWidget } from '../components/Widget';
+
+import * as covidAction from '../redux/covid-19/actions'
+import * as covidCountryAction from '../redux/covid-19Country/actions'
+
+
+/**
+ * @description clase principal del proyecto
+ */
 class DashboardPage extends React.Component {
   constructor(props) {
     super(props);
@@ -26,92 +36,27 @@ class DashboardPage extends React.Component {
       nombrePaisActual:"Colombia",
       paisItemsOrdenados: [],
       paisItems: {},
-      itemsTotalesFormateados: {},
-      itemsTotales: {},
       iso2: "CO",
       iso3: "COL",
-      paisItemsTotalesFormateados: {},
-      paisItemsTotales: {},
     };
   }
 
-  callback = (countrycode) => {
-    let url = 'https://wuhan-coronavirus-api.laeyoung.endpoint.ainize.ai/jhu-edu/latest';
-    let iso = 'iso3';
-    let valueIso = countrycode.iso3;
-    const request1 = new Request(
-      url + '?' + iso + '=' + valueIso, {
-      method: 'GET',
-    });
-    this.cargaIsoTotales(request1);
+  /**
+   * @description ciclo de vida del proyecto
+   */
+  componentDidMount() {
+    window.scrollTo(0, 0);
+    this.props.actions.getCovid()
+    this.props.actions.getCovidCountry("COL")
+    this.ordenarAscTable(countryProgressTableData, 'countryregion', 'asc');
   }
 
-  handleResponseError(response) {
-    throw new Error("HTTP error, status = " + response.status);
-  }
-  handleError(error) {
-    console.log(error.message);
-  }
-
-  cargaValoresTotales(request) {
-    fetch(request)
-      .then(response => {
-        if (!response.ok) {
-          this.handleResponseError(response);
-        }
-        return response.json();
-      })
-      .then(json => {
-        let itemsTotalesFormateados =
-        {
-          "confirmed": json.hasOwnProperty('confirmed') ? json.confirmed.toLocaleString() : "0",
-          "deaths": json.hasOwnProperty('deaths') ? json.deaths.toLocaleString() : "0",
-          "recovered": json.hasOwnProperty('recovered') ? json.recovered.toLocaleString() : "0"
-        };
-
-        this.setState({
-          itemsTotalesFormateados: itemsTotalesFormateados,
-          itemsTotales: json
-        })
-        let url = 'https://wuhan-coronavirus-api.laeyoung.endpoint.ainize.ai/jhu-edu/latest';
-        let iso = 'iso3';
-        let valueIso = 'COL';
-        const request1 = new Request(
-          url + '?' + iso + '=' + valueIso, {
-          method: 'GET',
-        });
-        this.cargaIsoTotales(request1);
-
-      })
-      .catch(error => {
-        this.handleError(error);
-      });
-  }
-
-  cargaIsoTotales(request) {
-    fetch(request)
-      .then(response => {
-        if (!response.ok) {
-          this.handleResponseError(response);
-        }
-        return response.json();
-      })
-      .then(json => {
-        let paisItemsTotalesFormateados =
-        {
-          "confirmed": json[0].hasOwnProperty('confirmed') ? json[0].confirmed.toLocaleString() : "0",
-          "deaths": json[0].hasOwnProperty('deaths') ? json[0].deaths.toLocaleString() : "0",
-          "recovered": json[0].hasOwnProperty('recovered') ? json[0].recovered.toLocaleString() : "0"
-        };
-        this.setState({
-          nombrePaisActual:json[0].countryregion,
-          paisItems: json[0],
-          paisItemsTotalesFormateados: paisItemsTotalesFormateados
-        })
-      })
-      .catch(error => {
-        this.handleError(error);
-      });
+  /**
+   * @description handler encargado de buscar por país
+   * @param {Object} countrycode objeto con el código para buscar el país 
+   */
+  findCovidCountry = (countrycode) => {
+    this.props.actions.getCovidCountry(countrycode.iso3)
   }
 
 
@@ -130,20 +75,25 @@ class DashboardPage extends React.Component {
     });
   }
 
-  componentDidMount() {
-    window.scrollTo(0, 0);
-    const request = new Request('https://wuhan-coronavirus-api.laeyoung.endpoint.ainize.ai/jhu-edu/brief', {
-      method: 'GET'
-    });
-    this.cargaValoresTotales(request);
-    this.ordenarAscTable(countryProgressTableData, 'countryregion', 'asc');
+  /**
+   * @description handle de errores
+   * @param {Object} response 
+   */
+  handleResponseError(response) {
+    throw new Error("HTTP error, status = " + response.status);
+  }
+  
+  handleError(error) {
+    console.log(error.message);
   }
 
+
   render() {
+    const { covid,covidCountry } = this.props 
     return (
       <Page
         className="DashboardPage"
-        title={this.state.paisItems.countryregion + ' - ' + 'Seguimiento de coronavirus'}
+        title={covidCountry.nameCountry + ' - ' + 'Seguimiento de coronavirus'}
         breadcrumbs={[{ name: 'Mapa', active: true }]}
       >
         <Row>
@@ -153,7 +103,7 @@ class DashboardPage extends React.Component {
               icon={MdEnhancedEncryption}
               iconProps={{ size: 50 }}
               title={'Total : '}
-              valor={this.state.paisItemsTotalesFormateados.confirmed}
+              valor={covidCountry.confirmed}
               subtitle="Total confirmados"
             />
           </Col>
@@ -164,7 +114,7 @@ class DashboardPage extends React.Component {
               icon={MdWhatshot}
               iconProps={{ size: 50 }}
               title={'Total : '}
-              valor={this.state.paisItemsTotalesFormateados.deaths}
+              valor={covidCountry.deaths}
               subtitle="Total muertes"
             />
           </Col>
@@ -175,7 +125,7 @@ class DashboardPage extends React.Component {
               icon={MdSentimentSatisfied}
               iconProps={{ size: 50 }}
               title={'Total : '}
-              valor={this.state.paisItemsTotalesFormateados.recovered}
+              valor={covidCountry.recovered}
               subtitle="Total recuperados"
             />
           </Col>
@@ -186,12 +136,12 @@ class DashboardPage extends React.Component {
             <NumberWidget
               title="Total confirmados"
               subtitle="Casos globales"
-              number={this.state.itemsTotalesFormateados.confirmed}
+              number={covid.confirmed}
               color="primary"
               progress={{
-                value: Number.parseFloat((this.state.paisItemsTotalesFormateados.confirmed * 100) / this.state.itemsTotales.confirmed).toFixed(4)
+                value: Number.parseFloat((covidCountry.confirmed * 100) / parseInt(covid.confirmed)).toFixed(4)
                 ,
-                label: 'Casos ' + this.state.paisItems.countryregion
+                label: 'Casos ' + covidCountry.nameCountry
                   + ' % Casos globales',
 
               }}
@@ -202,11 +152,11 @@ class DashboardPage extends React.Component {
             <NumberWidget
               title="Muertes totales"
               subtitle="Casos globales"
-              number={this.state.itemsTotalesFormateados.deaths}
+              number={covid.deaths}
               color="danger"
               progress={{
-                value: (Number.parseFloat(this.state.paisItemsTotalesFormateados.deaths * 100) / this.state.itemsTotales.deaths).toFixed(4),
-                label: 'Casos ' + this.state.paisItems.countryregion
+                value: (Number.parseFloat(covidCountry.deaths * 100) / covid.deaths).toFixed(4),
+                label: 'Casos ' + covidCountry.nameCountry
                   + ' % Casos globales',
               }}
             />
@@ -216,11 +166,11 @@ class DashboardPage extends React.Component {
             <NumberWidget
               title="Total  recuperados"
               subtitle="Casos globales"
-              number={this.state.itemsTotalesFormateados.recovered}
+              number={covid.recovered}
               color="success"
               progress={{
-                value: (Number.parseFloat(this.state.paisItemsTotalesFormateados.recovered * 100) / this.state.itemsTotales.recovered).toFixed(4),
-                label: 'Casos ' + this.state.paisItems.countryregion
+                value: (Number.parseFloat(covidCountry.recovered * 100) / covid.recovered).toFixed(4),
+                label: 'Casos ' + covidCountry.nameCountry
                   + ' % Casos globales',
               }}
             />
@@ -234,7 +184,7 @@ class DashboardPage extends React.Component {
                 Casos confirmados acumulados
               </CardHeader>
               <CardBody>
-                <MapWithBubbles nombrePaisActual={this.state.nombrePaisActual} />
+                <MapWithBubbles nombrePaisActual={covidCountry.nameCountry} />
               </CardBody>
             </Card>
           </Col>
@@ -248,7 +198,7 @@ class DashboardPage extends React.Component {
                   <MdPlace size={25} />,
                 ]}
                 countryData={countryProgressTableData}
-                parentCallback={this.callback}
+                parentCallback={this.findCovidCountry}
               />
             </CardBody>
           </Card>
@@ -258,4 +208,19 @@ class DashboardPage extends React.Component {
     );
   }
 }
-export default DashboardPage;
+
+
+function mapStateToProps(state) {
+  console.log(state)
+  return {
+    covid:state.covid,
+    covidCountry:state.covidCountry
+  }
+}
+
+function mapDispatchToProps(dispatch) {
+  return {
+      actions: bindActionCreators({  ...covidAction,...covidCountryAction }, dispatch)
+  }
+}
+export default connect(mapStateToProps,mapDispatchToProps)(DashboardPage);

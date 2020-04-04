@@ -1,10 +1,3 @@
-import Notifications from 'components/Notifications';
-import SearchInput from 'components/SearchInput';
-import withBadge from 'hocs/withBadge';
-import flgUno from 'assets/flags/blue.png'
-import flgDos from 'assets/flags/red.jpg'
-import flgTres from 'assets/flags/green.png'
-
 import React from 'react';
 import {
   MdClearAll,
@@ -21,7 +14,17 @@ import {
   Popover,
   PopoverBody,
 } from 'reactstrap';
-import bn from 'utils/bemnames';
+
+
+import flgUno from '../../assets/flags/blue.png'
+import flgDos from '../../assets/flags/red.jpg'
+import flgTres from '../../assets/flags/green.png'
+
+import bn from '../../utils/bemnames';
+
+import Notifications from '../../components/Notifications';
+import SearchInput from '../../components/SearchInput';
+import withBadge from '../../hocs/withBadge';
 
 const bem = bn.create('header');
 

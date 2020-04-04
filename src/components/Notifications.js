@@ -1,9 +1,10 @@
 import React from 'react';
-import PropTypes from 'utils/propTypes';
 
 import { Media } from 'reactstrap';
 
-import Avatar from 'components/Avatar';
+import PropTypes from '../utils/propTypes';
+
+import Avatar from '../components/Avatar';
 
 
 

@@ -1,11 +1,11 @@
-import { Content, Footer, Header, Sidebar } from 'components/Layout';
+import { Content, Footer, Header, Sidebar } from '../../components/Layout';
 import React from 'react';
 import {
   MdThumbUp,
   MdLoyalty,
 } from 'react-icons/md';
 import NotificationSystem from 'react-notification-system';
-import { NOTIFICATION_SYSTEM_STYLE } from 'utils/constants';
+import { NOTIFICATION_SYSTEM_STYLE } from '../../utils/constants';
 
 class MainLayout extends React.Component {
   state = {

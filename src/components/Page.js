@@ -1,11 +1,12 @@
 import React from 'react';
-import PropTypes from 'utils/propTypes';
-
-import bn from 'utils/bemnames';
 
 import { Breadcrumb, BreadcrumbItem } from 'reactstrap';
 
+
 import Typography from './Typography';
+
+import bn from '../utils/bemnames';
+import PropTypes from '../utils/propTypes';
 
 const bem = bn.create('page');
 

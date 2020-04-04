@@ -1,8 +1,8 @@
 import React from 'react';
-
-import bn from 'utils/bemnames';
-
 import { Container } from 'reactstrap';
+
+import bn from '../../utils/bemnames';
+
 
 const bem = bn.create('content');
 
