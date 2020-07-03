@@ -38,6 +38,7 @@
     "stylelint-scss": "^3.1.3"
   },
   "scripts": {
+    "CI": "react-scripts build",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "serve": "serve -s build",
