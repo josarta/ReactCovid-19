@@ -1,0 +1,1 @@
+    export const GET_COVID_COUNTRY = "@@covid/get_covid_country"

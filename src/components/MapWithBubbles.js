@@ -1,6 +1,5 @@
-import world50m from 'assets/geo-data/world-50m.json';
-import { scaleLinear } from 'd3-scale';
 import React, { Component } from 'react';
+import { scaleLinear } from 'd3-scale';
 import {
   ComposableMap,
   Geographies,
@@ -9,13 +8,17 @@ import {
   Markers,
   ZoomableGroup,
 } from 'react-simple-maps';
-import CirclePulse from 'components/CirclePulse'
-import { getColor } from 'utils/colors';
+
+import world50m from '../assets/geo-data/world-50m.json';
+import { getColor } from '../utils/colors';
+
+import CirclePulse from '../components/CirclePulse'
 
 const cityScale = scaleLinear()
   .domain([0, 37843000])
   .range([1, 25]);
 
+  
 class BubbleMap extends Component {
   state = {
     paisItems: [],
@@ -67,12 +70,8 @@ class BubbleMap extends Component {
   }
 
   render() {
-    const primaryColor = getColor('primary');
     const secondaryColor = getColor('secondary');
     const lightColor = getColor('light');
-
-    const lightWarning = getColor('warning');
-    const lightDanger = getColor('danger');
 
     return (
       <ComposableMap

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import PropTypes from 'utils/propTypes';
 import { Table, Media } from 'reactstrap';
 
+import PropTypes from '../utils/propTypes';
 
 
 const CountryProgressTable = ({ 

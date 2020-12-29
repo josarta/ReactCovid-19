@@ -1,9 +1,10 @@
 import React from 'react';
-import PropTypes from 'utils/propTypes';
-
 import classNames from 'classnames';
-
 import { Card, CardBody, CardTitle, CardSubtitle } from 'reactstrap';
+
+import PropTypes from '../../utils/propTypes';
+
+
 
 const IconWidget = ({
   bgColor,

@@ -1,20 +1,34 @@
-
-import GAListener from 'components/GAListener';
-import { MainLayout } from 'components/Layout';
-import PageSpinner from 'components/PageSpinner';
 import React from 'react';
-import componentQueries from 'react-component-queries';
 import { BrowserRouter, Redirect, Route, Switch } from 'react-router-dom';
+import { Provider } from "react-redux";
+import { PersistGate } from "redux-persist/integration/react";
+import { persistStore } from "redux-persist";
+import componentQueries from 'react-component-queries';
+
+
+import PageSpinner from './components/PageSpinner';
+import GAListener from './components/GAListener';
+import { MainLayout } from './components/Layout';
+
+import store from "./redux/store";
+
 import './styles/reduction.scss';
-const DashboardPage = React.lazy(() => import('pages/DashboardPage'));
+
+
+const DashboardPage = React.lazy(() => import('./pages/DashboardPage'));
 
 const getBasename = () => {
   return `/${process.env.PUBLIC_URL.split('/').pop()}`;
 };
 
+
+let persistor =persistStore(store)
+
 class App extends React.Component {
   render() {
     return (
+      <Provider store={store}>
+         <PersistGate loading={null} persistor={persistor}>
       <BrowserRouter basename={getBasename()}>
         <GAListener>
           <Switch>
@@ -27,6 +41,8 @@ class App extends React.Component {
           </Switch>
         </GAListener>
       </BrowserRouter>
+      </PersistGate>
+      </Provider>
     );
   }
 }
